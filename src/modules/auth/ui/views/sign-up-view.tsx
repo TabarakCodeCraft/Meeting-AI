@@ -51,15 +51,34 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                callbackURL: "/",
+
             },
             {
                 onSuccess: () => {
-                    router.push("/"); setPending(false);
+                    setPending(false);
                 },
                 onError: ({ error }) => { setError(error.message) },
             }
         );
-    };
+    }
+        ; const onSocial = (provider: "github" | "google") => {
+            setError(null);
+            setPending(true);
+
+            authClient.signIn.social(
+                {
+                    provider: provider,
+                    callbackURL: "/",
+                },
+                {
+                    onSuccess: () => {
+                        setPending(false);
+                    },
+                    onError: ({ error }) => { setError(error.message) },
+                }
+            );
+        };
 
     return (
         <div className="flex flex-col gap-6">
@@ -155,13 +174,16 @@ export const SignUpView = () => {
 
                             </div>
                             <div className="grid gap-4 grid-cols-2 mt-4">
-                                <Button className="w-full"
+                                <Button
+                                    onClick={() => onSocial("google")}
+                                    className="w-full"
                                     variant="outline"
                                     type="button"
                                     disabled={pending}>
                                     Google
                                 </Button>
                                 <Button
+                                    onClick={() => onSocial("github")}
                                     disabled={pending}
                                     className="w-full"
                                     variant="outline"
